@@ -28,6 +28,8 @@ Accepted setup choices and player decisions are appended to an immutable Firesto
 
 The client uses TypeScript, Vite, Firebase Anonymous Auth, and Firestore subscriptions. GitHub Pages hosts the static build. Main publishes at `https://anicolao.github.io/notr/`; same-repository PRs publish at `https://anicolao.github.io/notr/pr-N/` after checks pass. Preview and main currently share the public lobby backend. A table link uses a hash, so it works without server-side routing.
 
+GitHub Pages must use the Actions publishing source. After enabling Pages, configure the `github-pages` environment to allow PR refs; Pages initially restricts it to main. The workflow itself restricts publishing to same-repository PRs and never publishes baseline-capture runs.
+
 The repository's initial commit contains only an empty `README.md`. All project content is introduced for review in PR1.
 
 ## Documents
