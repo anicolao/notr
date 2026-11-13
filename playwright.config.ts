@@ -1,4 +1,7 @@
 import { defineConfig } from '@playwright/test';
+import { release } from 'node:os';
+
+const renderingPlatform = `${process.platform}-${release().split('.')[0]}-${process.arch}`;
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -9,7 +12,8 @@ export default defineConfig({
   timeout: 30_000, // Whole scenario budget; each individual condition is capped below.
   expect: { timeout: 2000, toHaveScreenshot: { maxDiffPixels: 0, threshold: 0, animations: 'disabled' } },
   reporter: [['list'], ['html', { open: 'never' }]],
-  snapshotPathTemplate: '{testDir}/{testFileDir}/screenshots/{projectName}/{arg}{ext}',
+  metadata: { renderingPlatform },
+  snapshotPathTemplate: `{testDir}/{testFileDir}/screenshots/{projectName}/${renderingPlatform}/{arg}{ext}`,
   use: {
     baseURL: 'http://127.0.0.1:5173',
     actionTimeout: 2000,

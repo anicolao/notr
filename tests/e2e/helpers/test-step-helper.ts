@@ -21,14 +21,14 @@ export class TestStepHelper {
       const filename = `${String(this.count++).padStart(3, '0')}-${id.replaceAll('_', '-')}.png`;
       await expect(this.page).toHaveScreenshot(filename, { fullPage: true, timeout: 2000 });
       this.steps.push({ description: options.description,
-        image: `./screenshots/${this.info.project.name}/${filename}`,
+        image: `./screenshots/${this.info.project.name}/${this.info.config.metadata.renderingPlatform}/${filename}`,
         specs: options.verifications.map(verification => verification.spec) });
     });
   }
   generateDocs() {
     const directory = dirname(this.info.file);
     mkdirSync(directory, { recursive: true });
-    writeFileSync(join(directory, `README.${this.info.project.name}.md`),
+    writeFileSync(join(directory, `README.${this.info.project.name}.${this.info.config.metadata.renderingPlatform}.md`),
       `# ${this.title || this.info.title}\n\n${this.description}\n\n` +
       this.steps.map(step => `## ${step.description}\n\n![${step.description}](${step.image})\n\n` +
         step.specs.map(spec => `- [x] ${spec}`).join('\n')).join('\n\n') + '\n');

@@ -19,8 +19,8 @@ Each scenario directory contains its spec, generated documentation per viewport,
 ```text
 tests/e2e/001-table/
   001-table.spec.ts
-  README.phone.md
-  screenshots/phone/000-welcome.png
+  README.phone.darwin-25-arm64.md
+  screenshots/phone/darwin-25-arm64/000-welcome.png
 ```
 
 Use `TestStepHelper` from `tests/e2e/helpers/test-step-helper.ts`:
@@ -41,11 +41,11 @@ Each step verifies behavior, checks readiness and font loading, captures and com
 
 ## Zero-pixel tolerance
 
-Set both `maxDiffPixels: 0` and `threshold: 0`. Do not mask dynamic regions, allow a percentage difference, or disable screenshot assertions. Use pinned Playwright, bundled fonts, fixed viewports, locale, timezone, device scale, reduced motion, and software rendering. CI uses macOS with the lockfile's Chromium revision. Treat rendering-platform changes as explicit baseline migrations.
+Set both `maxDiffPixels: 0` and `threshold: 0`. Do not mask dynamic regions, allow a percentage difference, or disable screenshot assertions. Use pinned Playwright, bundled fonts, fixed viewports, locale, timezone, device scale, reduced motion, and software rendering. CI uses macOS 15 with the lockfile's Chromium revision. Baselines are separated by operating-system major version and CPU architecture because software rendering still differs across platforms. Each platform enforces the same zero-pixel comparison; a new platform needs an explicitly reviewed baseline.
 
 Fixtures control one-time entropy so table codes stay stable in screenshots. Auth identities still come from the real Auth emulator. Keep opaque identities and seed material out of the illustrated UI; test the event payload separately. Do not stub the transport, replace Firestore with local storage, or mock successful joins.
 
-Review baseline changes as product changes. Generate them deliberately with `--update-snapshots`, inspect every image and its generated verification doc, then run without update mode to prove exact agreement. CI never updates baselines automatically. Screenshots and traces from failures are artifacts for diagnosis, not replacements for committed expectations.
+Review baseline changes as product changes. Generate them deliberately with `--update-snapshots`, inspect every image and its generated verification doc, then run without update mode to prove exact agreement. Normal CI never regenerates baselines. A maintainer can explicitly apply the `capture-visual-baselines` PR label to capture reference images and generated docs as an artifact on the runner. That run cannot publish. Download and inspect the artifact, commit the approved new platform images, remove the label, and push to run normal comparisons. Captures are never automatically committed or accepted as a passing release gate. Screenshots and traces from failures are artifacts for diagnosis, not replacements for committed expectations.
 
 ## Running the suite
 

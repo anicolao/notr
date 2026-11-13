@@ -4,6 +4,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+    types: [opened, synchronize, reopened, labeled]
   workflow_dispatch:
 
 permissions:
@@ -26,6 +27,17 @@ jobs:
       - run: npx playwright install chromium
       - run: npm run build
       - run: npm run test:emulators
+        if: "!contains(github.event.pull_request.labels.*.name, 'capture-visual-baselines')"
+      - name: Capture reference images on explicit maintainer request
+        if: contains(github.event.pull_request.labels.*.name, 'capture-visual-baselines')
+        run: npx firebase emulators:exec --project demo-notr --only auth,firestore "npm run test:unit && npm run test:rules && npm run test:e2e:update"
+      - uses: actions/upload-artifact@v4
+        if: contains(github.event.pull_request.labels.*.name, 'capture-visual-baselines')
+        with:
+          name: visual-reference-capture
+          path: |
+            tests/e2e/001-table/screenshots/
+            tests/e2e/001-table/README.*.md
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -36,7 +48,7 @@ jobs:
 
   publish:
     needs: verify
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    if: "!contains(github.event.pull_request.labels.*.name, 'capture-visual-baselines') && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)"
     runs-on: ubuntu-latest
     permissions:
       contents: write
