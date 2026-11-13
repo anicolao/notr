@@ -7,7 +7,7 @@ This guide is part of PR1's review surface. It adopts `../../food`'s unified `Te
 - No sleeps, `waitForTimeout`, timer-based retries, `networkidle`, or fixed delays. Firestore keeps long-lived connections open.
 - Wait for observable conditions: a button becomes enabled after Auth, a committed snapshot renders a roster, an alert appears after a rejected command.
 - Every action, navigation, assertion, screenshot, and explicit condition wait is capped at **2000 ms**. Never raise the limit to make a failing test pass.
-- The whole scenario has a 30-second execution budget, which is not permission for any individual wait to exceed 2000 ms. Emulator/browser installation happens before scenarios, outside application synchronization.
+- The whole scenario has a 30-second execution budget, which is not permission for any individual wait to exceed 2000 ms. Tool provisioning and emulator startup happen before scenarios, outside application synchronization.
 - No retries in CI. Diagnose missing events, incorrect readiness signals, or slow behavior instead of concealing failures.
 
 Application state changes through user actions, Auth completion, transactions, and subscriptions. The UI's `#status[data-state="ready"]` is an observable readiness signal; it does not replace assertions about the expected state.
@@ -41,7 +41,7 @@ Each step verifies behavior, checks readiness and font loading, captures and com
 
 ## Zero-pixel tolerance
 
-Set both `maxDiffPixels: 0` and `threshold: 0`. Do not mask dynamic regions, allow a percentage difference, or disable screenshot assertions. Use pinned Playwright, bundled fonts, fixed viewports, locale, timezone, device scale, reduced motion, and software rendering. CI uses macOS 15 with the lockfile's Chromium revision. Baselines are separated by operating-system major version and CPU architecture because software rendering still differs across platforms. Each platform enforces the same zero-pixel comparison; a new platform needs an explicitly reviewed baseline.
+Set both `maxDiffPixels: 0` and `threshold: 0`. Do not mask dynamic regions, allow a percentage difference, or disable screenshot assertions. Use pinned Playwright, bundled fonts, fixed viewports, locale, timezone, device scale, reduced motion, and software rendering. Local development and CI run through `nix develop`. The Nix lockfile pins the browser distribution, and the npm Playwright version must match that distribution. CI uses macOS 15. Baselines are separated by operating-system major version and CPU architecture because software rendering still differs across platforms. Each platform enforces the same zero-pixel comparison; a new platform needs an explicitly reviewed baseline.
 
 Fixtures control one-time entropy so table codes stay stable in screenshots. Auth identities still come from the real Auth emulator. Keep opaque identities and seed material out of the illustrated UI; test the event payload separately. Do not stub the transport, replace Firestore with local storage, or mock successful joins.
 
@@ -49,20 +49,22 @@ Review baseline changes as product changes. Generate them deliberately with `--u
 
 ## Running the suite
 
-Requires Node 24 and Java 21+ for the Firestore emulator:
+Always use the committed Nix development environment. It supplies Node/npm, Java, and the Playwright browser binaries and configures their paths; no separate system tool or browser installation is needed:
 
 ```sh
+nix develop
 npm ci
-npx playwright install chromium
 npm run test:emulators
 ```
 
-For deliberate baseline updates:
+For a single command without an interactive shell, use `nix develop --command npm run test:emulators`. Do not use ad hoc `nix shell` commands, globally installed Node/Java, or `playwright install`. Add missing tools to `flake.nix` and commit `flake.lock` changes. Project dependencies remain pinned in `package-lock.json`. When updating Nixpkgs, update the exact `@playwright/test` version to match `playwright-driver`; the flake rejects mismatches. Review any resulting visual changes through the baseline process above.
+
+For deliberate baseline updates, inside `nix develop`:
 
 ```sh
-npx firebase emulators:exec --project demo-notr --only auth,firestore "npm run test:e2e:update"
+npx firebase emulators:exec --project demo-notr --only auth,firestore "npm run test:rules && npm run test:e2e:update"
 ```
 
-On a Nix workstation without Java, prefix the emulator command with `nix shell nixpkgs#jdk21 --command`. The `demo-notr` project prevents tests from touching the deployed backend. Rules tests clear emulator data before E2E; browser contexts are isolated and each viewport uses its own deterministic table code.
+The `demo-notr` project prevents tests from touching the deployed backend. Rules tests clear emulator data before E2E; browser contexts are isolated and each viewport uses its own deterministic table code.
 
 Coverage in PR1 includes create, invitation join, live synchronization, restore after reload, invalid/unknown invitations, four screen sizes, immutable log inspection, and malicious Firestore writes. The 1920×1080 viewport is a layout check; real 55-inch hardware and reachability still require in-person testing.

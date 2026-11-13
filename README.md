@@ -6,19 +6,22 @@ An event-sourced digital adaptation of *Nuns on the Run* for phones, tablets, la
 
 ## Development
 
-Requires Node 24 and Java 21+ for the Firestore emulator.
+Development always runs in Nix. The committed `flake.nix` and `flake.lock` supply Node/npm, Java for the Firestore emulator, Chromium for Playwright, Git, GitHub CLI, and ripgrep. Add or change required system tools in the flake; do not install them globally or use ad hoc `nix shell` commands. Project dependencies and their CLIs are pinned by `package-lock.json` and installed with the Nix-provided npm.
 
 ```sh
+nix develop
 npm ci
-npx playwright install chromium
 npm run emulators
 ```
 
-In a second terminal, start the client against those emulators:
+In a second terminal, enter the same development shell and start the client against those emulators:
 
 ```sh
+nix develop
 VITE_EMULATORS=true npm run dev
 ```
+
+All project commands run inside `nix develop`, including backend operations and tests. For a single command, use `nix develop --command npm run build`. Chromium is supplied by the flake; do not run `playwright install`.
 
 Open the printed local URL. Run `npm run test:emulators` for reducer, security-rule, and E2E checks. Run `npm run build` to typecheck and produce the static site in `dist/`. Running the client without `VITE_EMULATORS=true` connects to the deployed Firebase project.
 

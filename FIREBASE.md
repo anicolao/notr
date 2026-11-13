@@ -4,9 +4,11 @@ Project: `notr-anicolao`. Firestore Standard database: `(default)`, location `na
 
 The Web SDK configuration in `src/firebase-config.json` is public metadata. Access is controlled by Firestore rules, not by hiding the API key. Never commit CLI login tokens, service-account keys, or emulator user exports.
 
-Provisioning commands used for PR1:
+Run all backend commands inside `nix develop` after `npm ci`; Java and Node come from the flake, and Firebase CLI is a pinned project dependency. Provisioning commands:
 
 ```sh
+nix develop
+npm ci
 npx firebase login
 npx firebase projects:create notr-anicolao --display-name 'Nuns on the Run'
 npx firebase apps:create WEB 'Nuns on the Run' --project notr-anicolao
