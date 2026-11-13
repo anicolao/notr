@@ -1,0 +1,32 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /tables/{code}/events/{eventId} {
+      function authenticated() { return request.auth != null; }
+      function validName(value) { return value is string && value.size() > 0 && value.size() <= 40 && value.matches('.*[^ ].*'); }
+      function baseEvent() {
+        return authenticated() && code.matches('^[A-HJ-NP-Z2-9]{8}$')
+          && request.resource.data.actor == request.auth.uid
+          && request.resource.data.version == 1
+          && validName(request.resource.data.displayName);
+      }
+      function createdPath() { return /databases/$(database)/documents/tables/$(code)/events/created; }
+      // An invitation code grants access to the public lobby only. No table directory.
+      allow read: if authenticated();
+      allow create: if baseEvent() && (
+        (eventId == 'created'
+          && request.resource.data.keys().hasOnly(['type', 'version', 'actor', 'displayName', 'tableName', 'seed'])
+          && request.resource.data.type == 'TableCreated'
+          && validName(request.resource.data.tableName)
+          && request.resource.data.seed is string
+          && request.resource.data.seed.matches('^[0-9a-f]{32}$'))
+        || (eventId == 'join-' + request.auth.uid
+          && request.resource.data.keys().hasOnly(['type', 'version', 'actor', 'displayName'])
+          && request.resource.data.type == 'PlayerJoined'
+          && exists(createdPath())
+          && get(createdPath()).data.actor != request.auth.uid)
+      );
+      allow update, delete: if false;
+    }
+  }
+}

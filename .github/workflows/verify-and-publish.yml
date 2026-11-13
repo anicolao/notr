@@ -1,0 +1,106 @@
+name: Verify and publish
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - run: npm ci
+      - run: npx playwright install chromium
+      - run: npm run build
+      - run: npm run test:emulators
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verification-evidence
+          path: |
+            playwright-report/
+            test-results/
+
+  publish:
+    needs: verify
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages-publishing
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Select deployment path
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO_NAME: ${{ github.event.repository.name }}
+        run: |
+          if [ -n "$PR_NUMBER" ]; then
+            echo "BASE_PATH=/$REPO_NAME/pr-$PR_NUMBER/" >> "$GITHUB_ENV"
+            echo "DESTINATION=pr-$PR_NUMBER" >> "$GITHUB_ENV"
+          else
+            echo "BASE_PATH=/$REPO_NAME/" >> "$GITHUB_ENV"
+            echo "DESTINATION=" >> "$GITHUB_ENV"
+          fi
+      - run: npm run build
+      - name: Preserve existing previews and publish this build
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          if git ls-remote --exit-code --heads origin gh-pages; then
+            git fetch origin gh-pages
+            git worktree add .pages FETCH_HEAD
+          else
+            git worktree add --detach .pages origin/main
+            git -C .pages switch -c gh-pages
+          fi
+          if [ -n "$DESTINATION" ]; then
+            rm -rf ".pages/$DESTINATION"
+            mkdir -p ".pages/$DESTINATION"
+            cp -R dist/. ".pages/$DESTINATION/"
+          else
+            find .pages -maxdepth 1 -mindepth 1 ! -name '.git' ! -name 'pr-*' -exec rm -rf {} +
+            cp -R dist/. .pages/
+          fi
+          touch .pages/.nojekyll
+          git -C .pages add .
+          git -C .pages diff --cached --quiet || git -C .pages commit -m "Publish $GITHUB_SHA at $BASE_PATH"
+          git -C .pages push origin HEAD:gh-pages
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .pages
+      - name: Deploy accumulated Pages site
+        id: deployment
+        uses: actions/deploy-pages@v4
+      - name: Record preview URL
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: echo "Preview $PAGE_URL$DESTINATION/" >> "$GITHUB_STEP_SUMMARY"
