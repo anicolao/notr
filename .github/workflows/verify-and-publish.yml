@@ -59,7 +59,7 @@ jobs:
       cancel-in-progress: false
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.preview.outputs.url }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -113,6 +113,10 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
       - name: Record preview URL
+        id: preview
         env:
           PAGE_URL: ${{ steps.deployment.outputs.page_url }}
-        run: echo "Preview $PAGE_URL$DESTINATION/" >> "$GITHUB_STEP_SUMMARY"
+        run: |
+          preview_url="${PAGE_URL}${DESTINATION:+$DESTINATION/}"
+          echo "url=$preview_url" >> "$GITHUB_OUTPUT"
+          echo "[Open preview]($preview_url)" >> "$GITHUB_STEP_SUMMARY"

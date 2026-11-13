@@ -79,7 +79,7 @@ Before calling the first release ready, verify complete games against the select
 
 ## Decisions to resolve during discovery
 
-- Which rules edition and player configurations define the first release?
+- Which Mayfair rulebook ambiguities need explicit interpretations before gameplay implementation?
 - What operating system, browser or runtime, resolution, and simultaneous-touch capabilities does the tabletop provide?
 - Where does the session authority run, and what connectivity is required for local and remote play?
 - How are games saved, seats reclaimed, and sessions continued if the host disconnects?
