@@ -25,3 +25,7 @@ the MVP_DESIGN doc only describes PR1. WTF? we should have an actual viable prod
 ## Prompt 6: Trust Game Clients
 
 in the MVP design: Novice device should show the positions of the guards; the architecture is trusted clients so we can rely on teh client to filter the display appropriately (for all participants); no cloud functions in the implementaiton (they are too slow). Fix the design with these things in mind.
+
+## Prompt 7: Prepare VM Handoff
+
+We're going to transfer this work to a VM. Write CONTEXT.md, a prompt that captures our work so far and will enable the other agent to resume easily from here.
