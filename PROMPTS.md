@@ -21,3 +21,7 @@ The E2E guide is wrong about nix usage; this project will always be developed on
 ## Prompt 5: Design Complete MVP
 
 the MVP_DESIGN doc only describes PR1. WTF? we should have an actual viable product, not just a sign in, described in our design document. Let's fix that. Also, we need prompt discipline similar to htat in ../deepsea. You may write short 2-4 word prompt summaries in teh heading and record all prompts verbatim including my topos.
+
+## Prompt 6: Trust Game Clients
+
+in the MVP design: Novice device should show the positions of the guards; the architecture is trusted clients so we can rely on teh client to filter the display appropriately (for all participants); no cloud functions in the implementaiton (they are too slow). Fix the design with these things in mind.

@@ -29,6 +29,8 @@ Open the printed local URL. Run `npm run test:emulators` for reducer, security-r
 
 Accepted setup choices and player decisions are appended to an immutable Firestore event log. Events contain user inputs and one-time facts such as seeds; views are computed by deterministic replay. No computed game information belongs in the log.
 
+The architecture uses trusted clients with direct Firestore reads and writes. Every admitted player and shared-display client can replay the complete log; client-side selectors filter what each role sees, including showing both guards' positions on novice devices. There are no Cloud Functions or application command servers.
+
 The client uses TypeScript, Vite, Firebase Anonymous Auth, and Firestore subscriptions. GitHub Pages hosts the static build. Main publishes at `https://anicolao.github.io/notr/`; same-repository PRs publish at `https://anicolao.github.io/notr/pr-N/` after checks pass. Preview and main currently share the public lobby backend. A table link uses a hash, so it works without server-side routing.
 
 GitHub Pages must use the Actions publishing source. After enabling Pages, configure the `github-pages` environment to allow PR refs; Pages initially restricts it to main. The workflow itself restricts publishing to same-repository PRs and never publishes baseline-capture runs.
@@ -40,7 +42,7 @@ The repository's initial commit contains only an empty `README.md`. All project 
 - [VISION.md](VISION.md): the end goal and player experience.
 - [RULES.md](RULES.md): a summary of the physical game.
 - [MVP_PRD.md](MVP_PRD.md): proposed product requirements for the complete first game.
-- [MVP_DESIGN.md](MVP_DESIGN.md): minimal design and the PR1 event contract.
+- [MVP_DESIGN.md](MVP_DESIGN.md): complete playable MVP design and event contract.
 - [E2E_GUIDE.md](E2E_GUIDE.md): TestStepHelper, event-driven conditions, 2000 ms wait limit, and zero-pixel comparisons.
 - [FIREBASE.md](FIREBASE.md): backend provisioning and operations.
 - [PROMPTS.md](PROMPTS.md): every project prompt verbatim, in order, with 2–4 word heading summaries.

@@ -2,6 +2,8 @@
 
 Project: `notr-anicolao`. Firestore Standard database: `(default)`, location `nam5`. Anonymous Auth is the only sign-in method used by the client.
 
+The application backend consists of Firebase Auth and Firestore only. Trusted clients append input facts, replay the complete admitted table stream, and filter displays locally. Do not provision or deploy Cloud Functions or a separate command service. Firestore rules cover table admission, action attribution, event shape, immutability, and transaction consistency; game legality and role-specific display selection run in the clients.
+
 The Web SDK configuration in `src/firebase-config.json` is public metadata. Access is controlled by Firestore rules, not by hiding the API key. Never commit CLI login tokens, service-account keys, or emulator user exports.
 
 Run all backend commands inside `nix develop` after `npm ci`; Java and Node come from the flake, and Firebase CLI is a pinned project dependency. Provisioning commands:

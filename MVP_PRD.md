@@ -1,6 +1,6 @@
 # MVP Product Requirements
 
-**Status:** proposed requirements for a complete first game. PR1 implements only the table lobby. The chosen event-sourced Firestore architecture, Anonymous Auth, GitHub Pages delivery, and PR1 boundary are defined in [MVP_DESIGN.md](MVP_DESIGN.md). Tabletop hardware details remain open.
+**Status:** proposed requirements for a complete first game. PR1 implements only the table lobby. [MVP_DESIGN.md](MVP_DESIGN.md) defines the trusted-client architecture: direct Firestore access, Anonymous Auth, local replay and display filtering, GitHub Pages delivery, and no Cloud Functions. Tabletop hardware details remain open.
 
 ## Objective
 
@@ -19,9 +19,9 @@ Choose a rules edition explicitly. Document interpretations of ambiguous cases a
 
 ### Make privacy part of the game model
 
-There are distinct audiences: the shared table, each novice, and the player or players controlling the guards. Each sees exactly what the rules permit. A novice's private route and objective belong on that player's device; the public board shows only permitted sightings, clues, and other public state.
+There are distinct display audiences: the shared table, each novice, and the player or players controlling the guards. Each UI shows exactly what the rules permit. Every novice device shows both guards' current positions and facing, regardless of novice line of sight, alongside that novice's own route and objective. Other novices' hidden information is filtered out. The shared board uses a public-only view.
 
-Privacy must hold across network messages, reconnects, notifications, logs, and device changes. Joining a session must not grant access to another player's seat or secrets.
+All admitted player and display clients are trusted and receive the complete event log and seed. Each client filters maps, histories, hints, notifications, and other rendered information for its current role, including after reconnect. This is display privacy, not secrecy against inspecting browser state or network traffic. Anonymous identity still controls seat ownership and action attribution; joining must not confer another player's controls.
 
 ### Design for people around a table
 
@@ -69,19 +69,19 @@ Public matchmaking, computer opponents, campaigns, ranked competition, alternate
 ## What success looks like
 
 - A group can join, understand its roles, and finish a game without manual movement logs or an external referee.
-- Novices and guards can make informed decisions using exactly the information their roles allow.
+- Novices and guards can make informed decisions using displays that show exactly what their roles allow; novice displays always include guard positions and facing.
 - A full game works on phones, tablets, and laptops, including a group using mixed device types.
 - People seated on every side of the 55-inch table can read the public state and act comfortably with their phones.
 - Reloading or reconnecting preserves the match, seat ownership, and committed actions.
 - Playtesters spend their attention on risk, pursuit, and conversation, with little time spent resolving interface confusion.
 
-Before calling the first release ready, verify complete games against the selected rules, test that public and opponent clients never receive unauthorized state, and run full sessions on the target device configurations.
+Before calling the first release ready, verify complete games against the selected rules, test every role's display filtering against the same complete state, and run full sessions on the target device configurations.
 
 ## Decisions to resolve during discovery
 
 - Which Mayfair rulebook ambiguities need explicit interpretations before gameplay implementation?
 - What operating system, browser or runtime, resolution, and simultaneous-touch capabilities does the tabletop provide?
-- What deployment configuration does the trusted Firebase command function need for the target regions and devices?
+- Do direct Firestore transactions and subscriptions meet the interaction requirements on the target devices and networks?
 - Are the designed reconnect and pending-request flows clear enough in real group playtests?
 - Does the selected TypeScript/Vite client meet the tabletop's runtime and input requirements?
 - Which original assets may be used, and what branding and distribution model will the project adopt?

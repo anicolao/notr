@@ -4,7 +4,7 @@ Use `nix develop` for project commands. Add required system tools to `flake.nix`
 
 Keep `VISION.md` about the end goal and player experience. `MVP_PRD.md` defines product requirements; `MVP_DESIGN.md` designs the complete playable MVP. An implementation increment such as PR1 is not the MVP. Clearly distinguish existing code from the complete product design.
 
-The immutable event log contains accepted user inputs and one-time nondeterministic facts only. Derive positions, phases, detections, scores, and winners through deterministic replay. Never expose private inputs or predictive secret seeds to unauthorized clients.
+The immutable event log contains accepted user inputs and one-time nondeterministic facts only. Derive positions, phases, detections, scores, and winners through deterministic replay. Clients are trusted: admitted player and display clients read the complete game log, replay locally, and filter all rendered information through role-specific selectors. Novice devices always show guard positions and facing. Use Firebase Auth and Firestore directly; do not add Cloud Functions or another application command server. Display filtering is the intended trust boundary, not protection against inspecting a modified client or developer tools.
 
 Follow `E2E_GUIDE.md`: event-driven synchronization, individual waits no longer than 2000 ms, zero-pixel comparisons, and unified `TestStepHelper` evidence. Review changed images and run normal comparisons after deliberate baseline updates.
 
