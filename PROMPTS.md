@@ -29,3 +29,7 @@ in the MVP design: Novice device should show the positions of the guards; the ar
 ## Prompt 7: Prepare VM Handoff
 
 We're going to transfer this work to a VM. Write CONTEXT.md, a prompt that captures our work so far and will enable the other agent to resume easily from here.
+
+## Prompt 8: Summarize Current Progress
+
+ - summarize where we are at and what you think the next step is.
