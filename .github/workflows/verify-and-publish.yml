@@ -15,9 +15,21 @@ jobs:
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: cachix/install-nix-action@v31
       - run: nix flake check --no-build
       - run: nix develop --command npm ci
+      - name: Check append-only prompt history
+        env:
+          PROMPT_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [ -n "$PROMPT_BASE" ] && [ "$PROMPT_BASE" != "0000000000000000000000000000000000000000" ]; then
+            nix develop --command node scripts/check-prompts.mjs --base "$PROMPT_BASE"
+          else
+            nix develop --command node scripts/check-prompts.mjs --history-only
+          fi
+      - run: nix develop --command npm run test:prompt-policy
       - run: nix develop --command npm run build
       - run: nix develop --command npm run test:emulators
         if: "!contains(github.event.pull_request.labels.*.name, 'capture-visual-baselines')"

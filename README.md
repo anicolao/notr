@@ -43,6 +43,16 @@ The repository's initial commit contains only an empty `README.md`. All project 
 - [MVP_DESIGN.md](MVP_DESIGN.md): minimal design and the PR1 event contract.
 - [E2E_GUIDE.md](E2E_GUIDE.md): TestStepHelper, event-driven conditions, 2000 ms wait limit, and zero-pixel comparisons.
 - [FIREBASE.md](FIREBASE.md): backend provisioning and operations.
+- [PROMPTS.md](PROMPTS.md): every project prompt verbatim, in order, with 2–4 word heading summaries.
+- [AGENTS.md](AGENTS.md): persistent project and prompt-recording instructions.
+
+`MVP_DESIGN.md` describes the complete playable game, from setup through victory and rematch. PR1's lobby is the first implementation increment toward it.
+
+## Prompt discipline
+
+Log each new project prompt in `PROMPTS.md` before working on it. Preserve the body exactly, including typos and line breaks; summarize only the heading. History is append-only. `npm ci` installs the Husky hook, which checks the staged prompt history and requires all related files to be staged. For another commit addressing the same prompt, append `Prompt N | SHA-256 | Unique work description` to `PROMPT_WORK.md`, using the hash of the exact current prompt log instead of duplicating the prompt. Do not bypass the hook or invent prompts to satisfy it.
+
+CI checks prompt history against the PR base (or previous main commit) and exercises the hook's rejection paths. These checks enforce structure and append-only history; manually check the logged bodies against the actual conversation for verbatim accuracy.
 
 ## License and credits
 

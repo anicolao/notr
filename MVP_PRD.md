@@ -81,7 +81,7 @@ Before calling the first release ready, verify complete games against the select
 
 - Which Mayfair rulebook ambiguities need explicit interpretations before gameplay implementation?
 - What operating system, browser or runtime, resolution, and simultaneous-touch capabilities does the tabletop provide?
-- Where does the session authority run, and what connectivity is required for local and remote play?
-- How are games saved, seats reclaimed, and sessions continued if the host disconnects?
+- What deployment configuration does the trusted Firebase command function need for the target regions and devices?
+- Are the designed reconnect and pending-request flows clear enough in real group playtests?
 - Does the selected TypeScript/Vite client meet the tabletop's runtime and input requirements?
 - Which original assets may be used, and what branding and distribution model will the project adopt?
