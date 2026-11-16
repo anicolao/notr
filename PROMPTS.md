@@ -33,3 +33,11 @@ We're going to transfer this work to a VM. Write CONTEXT.md, a prompt that captu
 ## Prompt 8: Summarize Current Progress
 
  - summarize where we are at and what you think the next step is.
+
+## Prompt 9: Resume Nuns Project
+
+nuns
+
+## Prompt 10: Fix PR Publishing
+
+Yes, please fix publishing
