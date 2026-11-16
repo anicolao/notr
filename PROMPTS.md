@@ -45,3 +45,7 @@ Yes, please fix publishing
 ## Prompt 11: Share Production Games
 
 Do not use isolated PR and production namespaces; make it possible to test a PR on an ongoing production game state
+
+## Prompt 12: Illustrate Game UX
+
+Write UX_DESIGN.md with images of mockups that demonstrate what the UI would look like for the game

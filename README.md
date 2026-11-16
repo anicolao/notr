@@ -43,6 +43,7 @@ The repository's initial commit contains only an empty `README.md`. All project 
 - [RULES.md](RULES.md): a summary of the physical game.
 - [MVP_PRD.md](MVP_PRD.md): proposed product requirements for the complete first game.
 - [MVP_DESIGN.md](MVP_DESIGN.md): complete playable MVP design and event contract.
+- [UX_DESIGN.md](UX_DESIGN.md): proposed game screens, illustrated mockups, and interaction flows for personal devices and the shared table.
 - [E2E_GUIDE.md](E2E_GUIDE.md): TestStepHelper, event-driven conditions, 2000 ms wait limit, and zero-pixel comparisons.
 - [FIREBASE.md](FIREBASE.md): backend provisioning and operations.
 - [PROMPTS.md](PROMPTS.md): every project prompt verbatim, in order, with 2–4 word heading summaries.
