@@ -49,3 +49,7 @@ Do not use isolated PR and production namespaces; make it possible to test a PR 
 ## Prompt 12: Illustrate Game UX
 
 Write UX_DESIGN.md with images of mockups that demonstrate what the UI would look like for the game
+
+## Prompt 13: Redesign Game Experience
+
+This looks really ugly. I was expecting you to use image generation to generate a slick looking game, not mock-ups that look like SVG/HTML diagrams rather than a game players would react positively to. Additionally, the ux design dosen't seem rules-aware: noise can't appear anywhre on the map for example; and it doesn't clearly communicate the user flow (how does the user choose a role int he lobby for just one example of many hwere the actual clicks and screens involved aran't shown). let's try again.

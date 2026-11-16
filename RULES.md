@@ -7,7 +7,7 @@ Baseline: [Mayfair rulebook](https://mind-maze.uk/nuns-on-the-run/rules/notr-rul
 - **Novice goal:** stop at the required keys, then the wish location, then return home first. Captures break simultaneous-win ties.
 - **Turns:** novices move secretly, reveal movement types, and check noise; guards move, reveal movement types, clear clues, and listen. Novices get two opening moves using one movement type.
 - **Movement:** novices stand still, sneak 1–2, walk 3–4, or run up to 5 dots. Noise modifiers respectively: −3, −2, −1, 0. Guards walk 3–4 or run 5–6; running prevents hearing.
-- **Detection:** sight checks each traversed dot, facing, walls, doors, six-dot range, and special visibility rules. Hearing uses dice, movement modifiers, and path distance. Clues allow guards to leave patrols.
+- **Detection:** sight checks each traversed dot, facing, walls, doors, six-dot range, and special visibility rules. Hearing uses dice, movement modifiers, and path distance. An ordinary Noise token goes beside the listening guard, toward the shortest path to the novice; tied directions allow either or both. It does not mark the sound source. Vanished tokens instead mark the edge where a novice leaves sight. A clue releases the affected guard from patrol, not automatically both guards. See the rulebook’s printed pages 4–7.
 - **Capture:** sharing a guard's dot scores a capture. The novice keeps keys, loses the collected wish, and walks home while visible; caught status temporarily prevents recapture.
 - **Guard victory:** captures equal player count, or no novice wins by turn 15's end.
 

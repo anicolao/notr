@@ -44,7 +44,7 @@ Use one pure TypeScript rules engine shared by every client, replay tooling, and
 | Guard movement | Choose movement mode, patrol, and explicit route steps. Resolve sight and capture at each relevant step/turn so later pursuit choices can respond to new clues. Enforce facing, speed, movement completion, and patrol departure/return. |
 | Guard hearing | Reveal guard movement, expire clues at the specified boundary, and derive hearing checks. Resolve remaining player-controlled noise placement choices before progressing. |
 | Blessings and recovery | Offer every base-game blessing at its legal timing window and record its use/targets. Derive effects, exhaustion, retained keys, lost wish progress, and caught-status recovery. |
-| End conditions | Derive the capture threshold, novice completion and published tiebreak, and turn-limit result at the correct boundary. If the published tiebreak still leaves equality, show shared winners; this final equality policy is an explicit digital convention. |
+| End conditions | Derive the capture threshold, novice completion and published tiebreak, and turn-limit result at the correct boundary. If the published tiebreak still leaves equality, show shared winners as specified by the rulebook. |
 
 Automatic consequences are engine transitions, not fabricated events or extra confirmations. Advance immediately when accepted inputs make the next state unambiguous; stop for genuine player choices. Do not ask players to confirm computed sightings, captures, dice, scores, or victory. No elapsed-time gameplay transitions or artificial waits are needed.
 
