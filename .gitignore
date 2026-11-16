@@ -1,0 +1,10 @@
+node_modules/
+dist/
+playwright-report/
+test-results/
+*-debug.log
+*-debug.*.log
+.firebase/
+.husky/_/
+.env*
+!.env.example

@@ -1,0 +1,125 @@
+name: Verify and publish
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, labeled]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: cachix/install-nix-action@v31
+      - run: nix flake check --no-build
+      - run: nix develop --command npm ci
+      - name: Check append-only prompt history
+        env:
+          PROMPT_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [ -n "$PROMPT_BASE" ] && [ "$PROMPT_BASE" != "0000000000000000000000000000000000000000" ]; then
+            nix develop --command node scripts/check-prompts.mjs --base "$PROMPT_BASE"
+          else
+            nix develop --command node scripts/check-prompts.mjs --history-only
+          fi
+      - run: nix develop --command npm run test:prompt-policy
+      - run: nix develop --command npm run build
+      - run: nix develop --command npm run test:emulators
+        if: "!contains(github.event.pull_request.labels.*.name, 'capture-visual-baselines')"
+      - name: Capture reference images on explicit maintainer request
+        if: contains(github.event.pull_request.labels.*.name, 'capture-visual-baselines')
+        run: nix develop --command npx firebase emulators:exec --project demo-notr --only auth,firestore "npm run test:unit && npm run test:rules && npm run test:e2e:update"
+      - uses: actions/upload-artifact@v4
+        if: contains(github.event.pull_request.labels.*.name, 'capture-visual-baselines')
+        with:
+          name: visual-reference-capture
+          path: |
+            tests/e2e/001-table/screenshots/
+            tests/e2e/001-table/README.*.md
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verification-evidence
+          path: |
+            playwright-report/
+            test-results/
+
+  publish:
+    needs: verify
+    if: "!contains(github.event.pull_request.labels.*.name, 'capture-visual-baselines') && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages-publishing
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.preview.outputs.url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: cachix/install-nix-action@v31
+      - run: nix develop --command npm ci
+      - name: Select deployment path
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO_NAME: ${{ github.event.repository.name }}
+        run: |
+          if [ -n "$PR_NUMBER" ]; then
+            echo "BASE_PATH=/$REPO_NAME/pr-$PR_NUMBER/" >> "$GITHUB_ENV"
+            echo "DESTINATION=pr-$PR_NUMBER" >> "$GITHUB_ENV"
+          else
+            echo "BASE_PATH=/$REPO_NAME/" >> "$GITHUB_ENV"
+            echo "DESTINATION=" >> "$GITHUB_ENV"
+          fi
+      - run: nix develop --command npm run build
+      - name: Preserve existing previews and publish this build
+        shell: nix develop --command bash -e {0}
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          if git ls-remote --exit-code --heads origin gh-pages; then
+            git fetch origin gh-pages
+            git worktree add .pages FETCH_HEAD
+          else
+            git worktree add --detach .pages origin/main
+            git -C .pages switch -c gh-pages
+          fi
+          if [ -n "$DESTINATION" ]; then
+            rm -rf ".pages/$DESTINATION"
+            mkdir -p ".pages/$DESTINATION"
+            cp -R dist/. ".pages/$DESTINATION/"
+          else
+            find .pages -maxdepth 1 -mindepth 1 ! -name '.git' ! -name 'pr-*' -exec rm -rf {} +
+            cp -R dist/. .pages/
+          fi
+          touch .pages/.nojekyll
+          git -C .pages add .
+          git -C .pages diff --cached --quiet || git -C .pages commit -m "Publish $GITHUB_SHA at $BASE_PATH"
+          git -C .pages push origin HEAD:gh-pages
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .pages
+      - name: Deploy accumulated Pages site
+        id: deployment
+        uses: actions/deploy-pages@v4
+      - name: Record preview URL
+        id: preview
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          preview_url="${PAGE_URL}${DESTINATION:+$DESTINATION/}"
+          echo "url=$preview_url" >> "$GITHUB_OUTPUT"
+          echo "[Open preview]($preview_url)" >> "$GITHUB_STEP_SUMMARY"
