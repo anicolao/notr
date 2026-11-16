@@ -102,7 +102,7 @@ The existing Firebase project is `notr-anicolao`, with Standard Firestore `(defa
 
 Check authentication on the VM before assuming it is missing: inside `nix develop`, use `gh auth status` and `npx firebase login:list`. The old workstation was authenticated, but its credentials are not in Git and must not be copied into this document. If necessary, authenticate using the CLI's supported login flow. Normal emulator tests and public frontend builds require no administrator credentials. Git author identity may also need checking before commits.
 
-PR1 and main currently share the live public-lobby backend. The complete MVP design calls for isolated PR/production namespaces; that isolation is future work. No Cloud Functions have been implemented or deployed for this application.
+PR1 and main share the live backend by design. The user subsequently required shared PR/production game paths so a compatible PR preview can operate on an ongoing production game. Do not introduce isolated deployment namespaces. No Cloud Functions have been implemented or deployed for this application.
 
 `.github/workflows/verify-and-publish.yml` verifies on macOS 15 using Nix, then builds/publishes on Ubuntu using Nix. Pages uses Actions publishing. The `github-pages` environment already permits PR refs. Bundles accumulate on `gh-pages`, preserving `/notr/pr-N/` previews; main builds publish at `/notr/`. Same-repository PRs publish after checks pass; fork PRs need a maintainer-owned branch for publishing. Use the PR1 URL for review while main remains the bootstrap.
 

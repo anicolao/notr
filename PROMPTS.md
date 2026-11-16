@@ -41,3 +41,7 @@ nuns
 ## Prompt 10: Fix PR Publishing
 
 Yes, please fix publishing
+
+## Prompt 11: Share Production Games
+
+Do not use isolated PR and production namespaces; make it possible to test a PR on an ongoing production game state
